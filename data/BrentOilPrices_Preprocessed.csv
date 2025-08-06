@@ -1,0 +1,67 @@
+!pip install pymc arviz matplotlib pandas numpy --quiet
+import pymc as pm
+import numpy as np
+import matplotlib.pyplot as plt
+import arviz as az
+import pandas as pd
+## Case 1: Bayesian Inference Calculation (Manual Computation)
+First, we update the prior using observed data without Monte Carlo.
+# Given Data
+prior_mean = 5      # Prior belief (average oil price increase in $)
+prior_std = 2       # Prior uncertainty
+likelihood_mean = 8  # Observed data suggests price change of $8 per barrel
+likelihood_std = 3   # Observed standard deviation
+n = 10   # Number of observations
+# Compute Posterior Mean and Variance
+posterior_mean = ( (likelihood_std**2 * prior_mean) + (n * prior_std**2 * likelihood_mean) ) / (likelihood_std**2 + n * prior_std**2)
+posterior_variance = (likelihood_std**2 * prior_std**2) / (likelihood_std**2 + n * prior_std**2)
+posterior_std = np.sqrt(posterior_variance)
+
+# Print Results
+print(f"Posterior Mean: {posterior_mean:.3f}")
+print(f"Posterior Std Dev: {posterior_std:.3f}")
+## Case 2: Monte Carlo (MC) Approximation
+We use random sampling from the prior and likelihood to approximate the posterior.
+# Monte Carlo Sampling
+num_samples = 10000
+prior_samples = np.random.normal(prior_mean, prior_std, num_samples)
+likelihood_samples = np.random.normal(likelihood_mean, likelihood_std, num_samples)
+
+# Compute Weighted Posterior Samples
+posterior_samples = (prior_samples + likelihood_samples) / 2  # Simple weighting approach
+
+# Plot Results
+plt.hist(posterior_samples, bins=50, density=True, alpha=0.6, label="Monte Carlo Approximation")
+plt.axvline(posterior_mean, color='r', linestyle='dashed', label="Analytical Posterior Mean")
+plt.xlabel("Oil Price Change ($)")
+plt.ylabel("Density")
+plt.legend()
+plt.title("Monte Carlo Approximation of Bayesian Inference")
+plt.show()
+
+### Step 3: Markov Chain Monte Carlo (MCMC) with PyMC
+We now use MCMC sampling to approximate the true posterior.
+
+python
+Copy
+Edit
+
+
+import pymc as pm
+import arviz as az
+
+# Bayesian Modeling with PyMC
+with pm.Model() as model:
+    theta = pm.Normal("theta", mu=prior_mean, sigma=prior_std)  # Prior
+    likelihood = pm.Normal("likelihood", mu=theta, sigma=likelihood_std, observed=[8]*10)  # Observed Data
+    trace = pm.sample(2000, tune=1000, return_inferencedata=True)
+
+# Plot Posterior Distribution
+az.plot_posterior(trace, var_names=["theta"])
+plt.title("Posterior Distribution from MCMC Sampling")
+plt.show()
+
+# Display Summary
+summary = az.summary(trace, var_names=["theta"])
+print(summary)
+
