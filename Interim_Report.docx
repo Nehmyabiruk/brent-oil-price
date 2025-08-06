@@ -1,0 +1,98 @@
+# Interim Submission Report: Brent Oil Price Change Point Analysis
+
+## Introduction
+
+This interim report outlines the planned data analysis workflow for the Week 10 challenge at 10 Academy, focusing on detecting change points in Brent oil prices and associating them with significant geopolitical and economic events. As a data scientist at Birhan Energies, the goal is to provide actionable insights for investors, policymakers, and energy companies by identifying structural breaks in oil price data and linking them to events such as political decisions, conflicts, sanctions, and OPEC policy changes. This report details the analysis steps, a compiled event dataset, assumptions, limitations, and communication strategies.
+
+## Data Analysis Workflow
+
+The analysis will follow a structured workflow to ensure robust and reproducible results:
+
+1. **Data Loading and Preprocessing**:
+
+   - Load the Brent oil price dataset (`BrentOilPrices.csv`) using pandas.
+   - Convert the 'Date' column to datetime format using `pd.to_datetime` with `format='mixed'` to handle varying date formats.
+   - Sort data by date and set 'Date' as the index.
+   - Handle missing values through time-based interpolation to maintain continuity.
+   - Compute log returns (`log(price_t) - log(price_{t-1})`) to analyze volatility, as they are more stationary and suitable for Bayesian modeling.
+
+2. **Exploratory Data Analysis (EDA)**:
+
+   - Plot the raw price series to identify trends, shocks, and volatility clusters.
+   - Analyze log returns to observe volatility clustering, which will inform change point modeling.
+   - Check for stationarity using statistical tests (e.g., Augmented Dickey-Fuller test) to validate the use of log returns.
+
+3. **Event Data Compilation**:
+
+   - Research and compile a dataset of 10-15 major geopolitical and economic events from 2012 to 2022 that likely impacted oil prices.
+   - Sources include reputable news archives (e.g., BBC, Reuters), OPEC reports, and economic databases.
+   - Create a CSV file (`Events.csv`) with columns: `Date`, `Event`, `Category` (e.g., Political, Conflict, OPEC Policy, Sanctions).
+
+4. **Bayesian Change Point Modeling**:
+
+   - Use PyMC to implement a Bayesian change point model with a discrete uniform prior for the switch point (`tau`) and normal distributions for pre- and post-change means (`mu_1`, `mu_2`).
+   - Sample the posterior distribution using MCMC to estimate change point locations and parameter shifts.
+   - Validate model convergence using `pm.summary()` and trace plots.
+
+5. **Insight Generation**:
+
+   - Identify significant change points and their posterior distributions.
+   - Align change point dates with the event dataset to hypothesize causal relationships.
+   - Quantify impacts (e.g., percentage change in mean price or volatility).
+
+6. **Dashboard Development**:
+
+   - Build a Flask backend to serve analysis results via APIs.
+   - Develop a React frontend with Recharts for interactive visualizations (e.g., price trends, event markers, change point indicators).
+   - Include filters for date ranges and event categories.
+
+7. **Reporting**:
+
+   - Summarize findings in a blog post for stakeholders, highlighting key change points and their associated events.
+   - Create an interactive dashboard for dynamic exploration of results.
+
+## Event Dataset
+
+The following table lists 10 key events from 2012 to 2022 that likely influenced Brent oil prices, compiled from public sources:
+
+| Date | Event Description | Category |
+| --- | --- | --- |
+| 2014-06-01 | ISIS insurgency in Iraq intensifies | Conflict |
+| 2014-11-27 | OPEC decides against production cuts | OPEC Policy |
+| 2016-01-16 | Iran nuclear deal implemented, sanctions lifted | Sanctions |
+| 2016-11-30 | OPEC agrees to cut production by 1.2M barrels/day | OPEC Policy |
+| 2018-05-08 | US withdraws from Iran nuclear deal, reimposes sanctions | Sanctions |
+| 2019-09-14 | Drone attacks on Saudi Aramco facilities | Conflict |
+| 2020-03-06 | OPEC+ fails to agree on production cuts, price war | OPEC Policy |
+| 2020-04-01 | COVID-19 pandemic triggers global demand collapse | Economic Shock |
+| 2021-07-18 | OPEC+ agrees to phase out production cuts | OPEC Policy |
+| 2022-02-24 | Russia invades Ukraine, energy sanctions imposed | Conflict/Sanctions |
+
+This dataset will be saved as `Events.csv` and used to correlate change points with events.
+
+## Assumptions and Limitations
+
+- **Assumptions**:
+  - Brent oil prices are influenced by major geopolitical and economic events.
+  - Log returns are approximately stationary, suitable for volatility analysis.
+  - The Bayesian model assumes a single or limited number of change points for simplicity.
+- **Limitations**:
+  - **Correlation vs. Causation**: Detected change points aligned with events indicate correlation, not causation. External factors (e.g., market sentiment) may also drive price changes.
+  - **Data Quality**: The dataset may have missing or inaccurate entries, mitigated by interpolation but not fully resolved.
+  - **Event Selection Bias**: The choice of events is subjective and may miss less publicized but impactful events.
+  - **Model Simplicity**: The Bayesian model may not capture complex interactions between multiple events or variables.
+
+## Communication Channels
+
+- **Primary Channel**: A Medium blog post will summarize findings for a broad audience, including investors and policymakers, with visualizations and clear narratives.
+- **Secondary Channel**: An interactive React dashboard hosted on a public URL, allowing stakeholders to explore price trends, change points, and event impacts.
+- **Format**: The blog post will use non-technical language, while the dashboard will include technical details (e.g., posterior distributions) for analysts.
+
+## Next Steps
+
+- Finalize the event dataset and validate event dates.
+- Implement the Bayesian change point model and validate convergence.
+- Develop the Flask-React dashboard for stakeholder interaction.
+- Draft the final report and blog post for submission by August 5, 2025.
+
+## 
