@@ -3,7 +3,7 @@
 **Bayesian Change Point Detection + Interactive Dashboard**  
 *10 Academy Week 10 Final Project*
 
-![Brent Oil Price Trend](price_trend.png)
+
 ![Change Points](change_points.png)
 
 ## 📋 Overview
@@ -52,9 +52,10 @@ text## 🛠️ Technologies Used
 ## 🚀 Quick Start
 
 ### 1. Clone the repository
-```bash
+
 git clone https://github.com/Nehmyabiruk/brent-oil-price.git
 cd brent-oil-price
+
 2. Install dependencies
 Python (Backend)
 Bashpip install pandas numpy matplotlib pymc arviz flask flask-cors
